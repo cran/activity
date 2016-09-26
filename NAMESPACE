@@ -1,4 +1,6 @@
 import(methods)
+importFrom("graphics", "hist", "lines")
+importFrom("stats", "ecdf", "optimise", "pchisq", "quantile", "runif", "sd")
 export(bwcalc)
 export(compareAct)
 export(compareCkern)

@@ -24,7 +24,7 @@ Modifies \code{stats::density} by:
  Truncating calculation (not just reporting) of density  values on from and/or to.
 }
 \details{
-Truncation copes with cases where where no data are available outside truncation points.
+Truncation copes with cases where no data are available outside truncation points.
 Truncation is achieved by fitting the density to the data augmented by reflecting it
 across each bound using the optimal bandwidth for the unaugmented data, and returning
 the resulting densities for the region between the bounds.

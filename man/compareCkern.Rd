@@ -18,7 +18,7 @@ A named 4-element vector: obs = observed overlap index; null = mean null overlap
 Randomisation test for the probability that two sets of circular observations come from the same distribution.
 }
 \details{
-Calculates overlap index Dhat5 (see references) for the two fitted distributions, then generates a null distribution of overlap indices using data sampled randomly with replacement from the combined data.
+Calculates overlap index Dhat4 (see references) for the two fitted distributions, then generates a null distribution of overlap indices using data sampled randomly with replacement from the combined data.
 This randomised distribution is then used to define an empirical probability distribution against which  the probability that the observed overlap arose by chance is judged.
 When one or both fitted models use weighted distributions, sampling probabilities are taken from the weights. If both models are weighted, the weights must therefore be on the same scale.
 }

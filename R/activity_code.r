@@ -81,20 +81,20 @@ setClass("lincircmod", representation(data="data.frame", fit="data.frame"))
 
 #' Index of overlap between circular distributions.
 #'
-#' Calculates Dhat5 overlap index (see reference) between two kernel distributions .
+#' Calculates Dhat4 overlap index (see reference) between two kernel distributions.
 #'
 #' Uses linear interpolation to impute values from kernel distributions.
 #'
 #' @param fit1,fit2 Fitted activity models of class actmod created using function fitact.
-#' @return Scalar overlap index (specifically Dhat5).
+#' @return Scalar overlap index (specifically Dhat4).
 #' @references Ridout, M.S. & Linkie, M. (2009) Estimating overlap of daily activity patterns from camera trap data. Journal of Agricultural Biological and Environmental Statistics, 14, 322-337.
 #' @examples
 #' data(BCItime)
 #' oceAct <- fitact(subset(BCItime, species=="ocelot")$time*2*pi)
 #' broAct <- fitact(subset(BCItime, species=="brocket")$time*2*pi)
-#' ovl5(oceAct, broAct)
+#' ovl4(oceAct, broAct)
 #' @export
-ovl5 <- function(fit1, fit2){
+ovl4 <- function(fit1, fit2){
   f <- stats::approxfun(fit1@pdf[,1], fit1@pdf[,2])
   g <- stats::approxfun(fit2@pdf[,1], fit2@pdf[,2])
   fx <- f(fit1@data)
@@ -199,7 +199,7 @@ redf <- function(n, fit){
 #'  Adding SE and 95\% confidence intervals for the density to the output; and
 #'  Truncating calculation (not just reporting) of density  values on from and/or to.
 #'
-#' @details Truncation copes with cases where where no data are available outside truncation points.
+#' @details Truncation copes with cases where no data are available outside truncation points.
 #' Truncation is achieved by fitting the density to the data augmented by reflecting it
 #' across each bound using the optimal bandwidth for the unaugmented data, and returning
 #' the resulting densities for the region between the bounds.
@@ -409,7 +409,7 @@ fitact <- function(dat, wt=NULL, reps=999, bw=NULL, adj=1, sample=c("none","data
 #'
 #' Randomisation test for the probability that two sets of circular observations come from the same distribution.
 #'
-#' Calculates overlap index Dhat5 (see references) for the two fitted distributions, then generates a null distribution of overlap indices using data sampled randomly with replacement from the combined data.
+#' Calculates overlap index Dhat4 (see references) for the two fitted distributions, then generates a null distribution of overlap indices using data sampled randomly with replacement from the combined data.
 #' This randomised distribution is then used to define an empirical probability distribution against which  the probability that the observed overlap arose by chance is judged.
 #' When one or both fitted models use weighted distributions, sampling probabilities are taken from the weights. If both models are weighted, the weights must therefore be on the same scale.
 #'
@@ -434,7 +434,7 @@ compareCkern <- function(fit1, fit2, reps=999){
     stop("Distribution bounds are not identical")
 
   if(diff(bnd)==2*pi) bnd <- NULL
-  olp <- ovl5(fit1,fit2)
+  olp <- ovl4(fit1,fit2)
   y1 <- fit1@data
   y2 <- fit2@data
   w1 <- fit1@wt
@@ -447,7 +447,7 @@ compareCkern <- function(fit1, fit2, reps=999){
   f <- function(s){
     m1 <- fitact(y[s[1:length(y1)]], sample="n", bw=fit1@bw, adj=fit1@adj, bounds=bnd)
     m2 <- fitact(y[s[(length(y1)+1):length(y)]], sample="n", bw=fit1@bw, adj=fit1@adj, bounds=bnd)
-    ovl5(m1,m2)
+    ovl4(m1,m2)
   }
   res <- pbapply::pbapply(samp, 1, f)
   fun <- stats::ecdf(res)
@@ -711,7 +711,7 @@ plot.actmod <- function(x, xunit=c("clock","hours","radians"), yunit=c("frequenc
     }
     do.call(graphics::axis, xaxis)
   }
-  ########## end setup function #############
+  ### end setup function ###
 
   data <- match.arg(data)
   xunit <- match.arg(xunit)
@@ -832,4 +832,204 @@ plot.lincircmod <- function(x, CircScale=2*pi, tlim=c(0,1), fcol="black", flty=1
      graphics::lines(xx[i], fit$nullLCL[i], col=ncol, lty=nlty)
      graphics::lines(xx[i], fit$nullUCL[i], col=ncol, lty=nlty)
   }
+}
+
+
+#' Convert time of day data to numeric
+#'
+#' Accepts data of class POSIXct, POSIXlt or character and returns the  time of day element as numeric (any date element is ignored).
+#'
+#' @param x A vector of POSIXct, POSIXlt or character format time data to convert.
+#' @param format A character string defining the time/date format if \code{x} is character format, see \code{strptime} for details. Ignored if \code{x} is not character.
+#' @param scale The scale on which to return times (see Value for options).
+#' @return A vector of numeric times of day in units defined by the \code{scale} argument:
+#' radian, on the range [0, 2*pi];
+#' hours, on the range [0, 24];
+#' proportion, on the range [0, 1].
+#' @seealso \code{\link{strptime}}
+#' @examples
+#' data(BCItime)
+#' rtime <- gettime(BCItime$date, "%d/%m/%Y %H:%M")
+#' htime <- gettime(BCItime$date, "%d/%m/%Y %H:%M", "hour")
+#' ptime <- gettime(BCItime$date, "%d/%m/%Y %H:%M", "proportion")
+#' summary(rtime)
+#' summary(htime)
+#' summary(ptime)
+#' @export
+gettime <- function(x, format="%Y-%m-%d %H:%M:%S", scale=c("radian","hour","proportion")){
+  if(class(x)[1]=="character") x <- strptime(x, format, "UTC") else
+    if(class(x)[1]=="POSIXct") x <- as.POSIXlt(x) else
+      if(class(x)[1]!="POSIXlt") stop("x must be character or POSIXt class")
+
+    scale <- match.arg(scale)
+
+    res <- x$hour + x$min/60 + x$sec/3600
+    if(scale=="radian") res <- res*pi/12
+    if(scale=="proportion") res <- res/24
+    if(all(res==0, na.rm=T)) warning("All times are 0: may be just strptime default?")
+    res
+}
+
+
+#' Wraps data on a given range.
+#'
+#' Input data outside the given bounds (default radian [0, 2*pi]) are wrapped to appear within the range.
+#'
+#' @details As an example of wrapping, on bounds [0, 1], a value of 1.2 will be converted to 0.2, while a value of -0.2 will be converted to 0.8.
+#' @param x A vector of numeric data.
+#' @param bounds The range within which to wrap \code{x} values
+#' @return A vector of numeric values within the limits defined by \code{bounds}
+#' @examples
+#' data(BCItime)
+#' adjtime <- BCItime$time + 1/24
+#' summary(adjtime)
+#' adjtime <- wrap(adjtime, c(0,1))
+#' summary(adjtime)
+#' @export
+wrap <- function(x, bounds=c(0,2*pi)){
+  bounds[1] + (x-bounds[1]) %% diff(bounds)
+}
+
+
+#' Circular mean
+#'
+#' Calculates the average direction of a set of radian circular values.
+#'
+#' @details The \code{base::mean} function is use internally, and additional arguments, e.g for missing data handling, are passed to this.
+#' @param x A vector of radian values.
+#' @param ... Arguments passed to \code{mean}.
+#' @return A radian value giving mean direction.
+#' @seealso \code{\link{mean}}
+#' @examples
+#' data(BCItime)
+#' times <- subset(BCItime, species=="ocelot")$time*2*pi
+#' cmean(times)
+#' @export
+cmean <- function(x, ...){
+  X <- mean(cos(x), ...)
+  Y <- mean(sin(x), ...)
+  wrap(atan(Y/X) + ifelse(X<0,pi,0))
+}
+
+
+#' Transforms clock time to solar time anchored to sun rise and sunset times for a given location.
+#'
+#' This is a wrapper for \code{transtime} that takes non-numeric date-time input together with latitude and longitude to calculate mean average sunrise and sunset times, which are then used to anchor the transformation using average anchoring.
+#'
+#' @details Time zone \code{tz} should be expressed in numeric hours relative to UTC (GMT).
+#' @param dat A vector of character, POSIXct or POSIXlt date-time values.
+#' @param lat,long Single numeric values or numeric vectors the same length as \code{dat} giving site latitude and longitude in decimal format.
+#' @param tz A single numeric value or numeric vector same length as \code{dat} giving time zone (see Details).
+#' @param format A character string defining the time-date format if \code{dat} is character format, see \code{strptime} for details. Ignored if \code{x} is not character.
+#' @return A list with elements:
+#' @return \code{input}: event input dates-times in POSIXlt format.
+#' @return \code{clock}: radian clock time data.
+#' @return \code{solar}: radian solar time data anchored to average sun rise and sun set times.
+#' @references Vazquez, C., Rowcliffe, J.M., Spoelstra, K. and Jansen, P.A. in press. Comparing diel activity patterns of wildlife across latitudes and seasons: time transformation using day length. Methods in Ecology and Evolution.
+#' @seealso \code{\link{strptime}, \link{transtime}}
+#' @examples
+#' data(BCItime)
+#' subdat <- subset(BCItime, species=="ocelot")
+#' times <- solartime(subdat$date, 9.156335, -79.847682, -5, "%d/%m/%Y %H:%M")
+#' rawAct <- fitact(times$clock)
+#' avgAct <- fitact(times$solar)
+#' plot(rawAct)
+#' plot(avgAct, add=TRUE, data="n", tline=list(col="cyan"))
+#' @export
+solartime <- function(dat, lat, long, tz, format="%Y-%m-%d %H:%M:%S"){
+  if(class(dat)[1]=="character"){
+    dat <- strptime(dat, format, "UTC")
+    if(any(is.na(dat))) stop("Date conversion was at least partly unsuccessful - check formatting")
+  } else
+    if(!grepl("POSIX", class(dat)[1]))
+      stop("dat must be character or POSIXt class")
+  posdat <- list(lat,long,tz)
+  if(any(unlist(lapply(posdat, class)) != "numeric") |
+     any(unlist(lapply(posdat, length)) != length(dat) &
+         unlist(lapply(posdat, length)) != 1))
+    stop("lat, long and tz must all be numeric scalars or vectors the same length as dat")
+
+  suntimes <- wrap(insol::daylength(lat, long, insol::JD(dat), tz)[,-3] * pi/12)
+  tm <- gettime(dat)
+  list(input=dat, clock=tm, solar=transtime(tm, suntimes))
+}
+
+
+#' Transforms clock time to solar times.
+#'
+#' Transforms time expressed relative to either the time of a single solar event (anchor times - Nouvellet et al. 2012), or two solar events (such as sun rise and sun set - Vazquez et al. in press).
+#'
+#' @details If double anchoring is requested (i.e. \code{type} is equinoctial
+#' or average), the \code{anchor} argument requires a two-column matrix,
+#' otherwise a vector. The argument \code{mnanchor} can usually be left at
+#' its default \code{NULL} value. In this case, the mean anchors are set to
+#' \code{c(pi/2, pi*3/2)} when \code{type}=="equinoctial", otherwise the
+#' \code{anchor} mean(s).
+#'
+#' Although the anchors for transformation are usually likely to be solar
+#' events (e.g. sun rise and/or sunset), they could be other celestial
+#' (e.g. lunar) or human-related (e.g. timing of artificial lighting) events.
+#' @param dat A vector of radian event clock times.
+#' @param anchor A vector or matrix matched with \code{dat} containing radian anchor times on the day of each event (see Details).
+#' @param mnanchor A scalar or two-element vector of numeric radian mean anchor times (see Details).
+#' @param type The type of transformation to use (see Details).
+#' @return  A vector of radian transformed times.
+#' @references Vazquez, C., Rowcliffe, J.M., Spoelstra, K. and Jansen, P.A. in press. Comparing diel activity patterns of wildlife across latitudes and seasons: time transformation using day length. Methods in Ecology and Evolution.
+#' @references Nouvellet, P., Rasmussen, G.S.A., Macdonald, D.W. and Courchamp, F. 2012. Noisy clocks and silent sunrises: measurement methods of daily activity pattern. Journal of Zoology 286: 179-184.
+#' @examples
+#' data(BCItime)
+#' subdat <- subset(BCItime, species=="ocelot")
+#' jdate <- insol::JD(strptime(subdat$date, "%d/%m/%Y %H:%M", "UTC"))
+#' suntimes <- pi/12 * insol::daylength(9.156335, -79.847682, jdate, -5)[, -3]
+#' rawtimes <- subdat$time*2*pi
+#' avgtimes <- transtime(rawtimes, suntimes)
+#' eqntimes <- transtime(rawtimes, suntimes, type="equinoctial")
+#' sngtimes <- transtime(rawtimes, suntimes[,1], type="single")
+#' rawAct <- fitact(rawtimes)
+#' avgAct <- fitact(avgtimes)
+#' eqnAct <- fitact(eqntimes)
+#' sngAct <- fitact(sngtimes)
+#' plot(rawAct)
+#' plot(avgAct, add=TRUE, data="n", tline=list(col="magenta"))
+#' plot(eqnAct, add=TRUE, data="n", tline=list(col="orange"))
+#' plot(sngAct, add=TRUE, data="n", tline=list(col="cyan"))
+#' @export
+transtime <- function(dat, anchor, mnanchor=NULL, type=c("average", "equinoctial", "single")){
+  if(!all(dat>=0 & dat<=2*pi, na.rm=TRUE)) warning("some dat values are <0 or >2*pi, expecting radian data")
+  if(max(dat, na.rm=TRUE)<1) warning("max(dat) < 1, expecting radian data")
+  if(!all(anchor>=0 & anchor<=2*pi, na.rm=TRUE)) warning("some anchor values are <0 or >2*pi, expecting radian values")
+  if(is.null(ncol(anchor))) anchor <- matrix(anchor, ncol=1)
+  if(!all(apply(anchor, 2, is.numeric))) stop("anchor must be a numeric vector, matrix or data.frame")
+  nr <- nrow(anchor)
+  if(length(dat) != nr) stop("dat and anchor have different lengths")
+  type <- match.arg(type)
+  nc <- ncol(anchor)
+  if(is.null(mnanchor)) mnanchor <- apply(anchor, 2, cmean, na.rm=TRUE)
+  if(type=="single"){
+    if(nc>1) warning("only one column needed for anchor; additional columns ignored")
+  } else{
+    if(nc==1) stop("double anchoring requires a two-column matrix or data.frame for anchor")
+    if(!is.vector(mnanchor) | length(mnanchor)!=2) stop("if provided, mnanchor must be a 2-element vector for double anchoring")
+    if(nc>2) warning("only two columns needed for anchor; additional columns ignored")
+  }
+
+  if(type=="single"){
+    res <- wrap(mnanchor[1] + dat - anchor[,1])
+  } else{
+    difs <- wrap(cbind(dat,dat)-anchor)
+    flip <- difs[,1]>difs[,2]
+    a1 <- ifelse(flip, anchor[,2], anchor[,1])
+    a2 <- ifelse(flip, anchor[,1], anchor[,2])
+    relpos <- wrap(dat-a1) / wrap(a2-a1)
+    interval <- switch(type,
+                       "equinoctial"=pi,
+                       "average"=ifelse(flip, wrap(mnanchor[1]-mnanchor[2]), wrap(mnanchor[2]-mnanchor[1]))
+    )
+    baseline <- switch(type,
+                       "equinoctial"=ifelse(flip, pi*3/2, pi/2),
+                       "average"=ifelse(flip, mnanchor[2], mnanchor[1])
+    )
+    res <- wrap(baseline + interval * relpos)
+  }
+  res
 }

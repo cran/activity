@@ -4,15 +4,23 @@
 \alias{fitact}
 \title{Fit activity model to time-of-day data}
 \usage{
-fitact(dat, wt = NULL, reps = 999, bw = NULL, adj = 1,
-  sample = c("none", "data", "model"), bounds = NULL, show = TRUE)
+fitact(
+  dat,
+  wt = NULL,
+  reps = 999,
+  bw = NULL,
+  adj = 1,
+  sample = c("none", "data", "model"),
+  bounds = NULL,
+  show = TRUE
+)
 }
 \arguments{
 \item{dat}{A numeric vector of radian time-of-day data.}
 
 \item{wt}{A numeric vector of weights for each \code{dat} value.}
 
-\item{reps}{Number of boostrap iterations to perform. Ignored if sample=="none".}
+\item{reps}{Number of bootstrap iterations to perform. Ignored if \code{sample=="none"}.}
 
 \item{bw}{Numeric value for kernel bandwidth. If NULL, calculated internally.}
 
@@ -41,12 +49,14 @@ exploration of the effect of adjusting the internally calculated bandwidth on
 accuracy of activity level estimates.
 
 The alternative bootstrapping methods defined by \code{sample} are:
- \code{none}: no bootstrapping.
- \code{data}: sample from the data;
- \code{model}: sample from the fitted probability density distribution;
-Confidence interval coverage seems to be better at large sample size
-(greater than around 100) using \code{"model"}, but better at small sample size
-when using \code{"data"}.
+\itemize{
+ \item{\code{"none"}: no bootstrapping}
+ \item{\code{"data"}: sample from the data}
+ \item{\code{"model"}: sample from the fitted probability density distribution}
+ }
+It's generally better to sample from the data, but sampling from
+the fitted distribution can sometimes provide more sensible confidence intervals when
+the number of observations is very small.
 }
 \examples{
 #Fit without confidence limits

@@ -4,7 +4,9 @@
 \name{BCIspeed}
 \alias{BCIspeed}
 \title{Animal speed data}
-\format{A dataframe with 2204 observations and 3 variables.}
+\format{
+A dataframe with 2204 observations and 3 variables.
+}
 \source{
 http://dx.doi.org/10.6084/m9.figshare.1160536
 }

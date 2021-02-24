@@ -4,8 +4,16 @@
 \alias{plot.lincircmod}
 \title{Plot linear-circular relationship}
 \usage{
-\method{plot}{lincircmod}(x, CircScale = 2 * pi, tlim = c(0, 1),
-  fcol = "black", flty = 1, ncol = "red", nlty = 2, ...)
+\method{plot}{lincircmod}(
+  x,
+  CircScale = 2 * pi,
+  tlim = c(0, 1),
+  fcol = "black",
+  flty = 1,
+  ncol = "red",
+  nlty = 2,
+  ...
+)
 }
 \arguments{
 \item{x}{Object of class \code{lincircmod}.}

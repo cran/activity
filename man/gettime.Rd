@@ -4,8 +4,11 @@
 \alias{gettime}
 \title{Convert time of day data to numeric}
 \usage{
-gettime(x, format = "\%Y-\%m-\%d \%H:\%M:\%S", scale = c("radian",
-  "hour", "proportion"))
+gettime(
+  x,
+  format = "\%Y-\%m-\%d \%H:\%M:\%S",
+  scale = c("radian", "hour", "proportion")
+)
 }
 \arguments{
 \item{x}{A vector of POSIXct, POSIXlt or character format time data to convert.}

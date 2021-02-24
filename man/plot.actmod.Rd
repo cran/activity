@@ -4,11 +4,19 @@
 \alias{plot.actmod}
 \title{Plot activity distribution}
 \usage{
-\method{plot}{actmod}(x, xunit = c("clock", "hours", "radians"),
-  yunit = c("frequency", "density"), data = c("histogram", "rug",
-  "both", "none"), centre = c("day", "night"), dline = list(lwd =
-  ifelse(data == "rug", 0.1, 1)), tline = NULL, cline = list(lty = 2),
-  add = FALSE, xaxis = NULL, ...)
+\method{plot}{actmod}(
+  x,
+  xunit = c("clock", "hours", "radians"),
+  yunit = c("frequency", "density"),
+  data = c("histogram", "rug", "both", "none"),
+  centre = c("day", "night"),
+  dline = list(lwd = ifelse(data == "rug", 0.1, 1)),
+  tline = NULL,
+  cline = list(lty = 2),
+  add = FALSE,
+  xaxis = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{Object of class \code{actmod}.}

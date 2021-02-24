@@ -4,7 +4,9 @@
 \name{BCItime}
 \alias{BCItime}
 \title{Animal record time of day data}
-\format{A dataframe with 17820 observations and 2 variables.}
+\format{
+A dataframe with 17820 observations and 2 variables.
+}
 \source{
 http://dx.doi.org/10.6084/m9.figshare.1160536
 }

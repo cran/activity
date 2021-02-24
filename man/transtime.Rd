@@ -4,8 +4,12 @@
 \alias{transtime}
 \title{Transforms clock time to solar times.}
 \usage{
-transtime(dat, anchor, mnanchor = NULL, type = c("average",
-  "equinoctial", "single"))
+transtime(
+  dat,
+  anchor,
+  mnanchor = NULL,
+  type = c("average", "equinoctial", "single")
+)
 }
 \arguments{
 \item{dat}{A vector of radian event clock times.}

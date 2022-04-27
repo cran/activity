@@ -34,5 +34,5 @@ pdf <- dvmkern(xx, tt)
 plot(xx, pdf, type="l")
 }
 \seealso{
-\code{\link{density.circular}, \link{bwcalc}}
+\code{\link{bwcalc}}
 }

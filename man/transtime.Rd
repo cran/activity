@@ -41,8 +41,7 @@ events (e.g. sun rise and/or sunset), they could be other celestial
 \examples{
 data(BCItime)
 subdat <- subset(BCItime, species=="ocelot")
-jdate <- insol::JD(strptime(subdat$date, "\%d/\%m/\%Y \%H:\%M", "UTC"))
-suntimes <- pi/12 * insol::daylength(9.156335, -79.847682, jdate, -5)[, -3]
+suntimes <- pi/12 * get_suntimes(subdat$date, 9.156335, -79.847682, -5)[, -3]
 rawtimes <- subdat$time*2*pi
 avgtimes <- transtime(rawtimes, suntimes)
 eqntimes <- transtime(rawtimes, suntimes, type="equinoctial")

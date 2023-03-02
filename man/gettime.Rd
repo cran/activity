@@ -6,16 +6,21 @@
 \usage{
 gettime(
   x,
-  format = "\%Y-\%m-\%d \%H:\%M:\%S",
-  scale = c("radian", "hour", "proportion")
+  scale = c("radian", "hour", "proportion"),
+  ...,
+  tryFormats = c("\%Y-\%m-\%d \%H:\%M:\%OS", "\%Y/\%m/\%d \%H:\%M:\%OS",
+    "\%Y:\%m:\%d \%H:\%M:\%OS", "\%Y-\%m-\%d \%H:\%M", "\%Y/\%m/\%d \%H:\%M",
+    "\%Y:\%m:\%d \%H:\%M", "\%Y-\%m-\%d", "\%Y/\%m/\%d", "\%Y:\%m:\%d")
 )
 }
 \arguments{
 \item{x}{A vector of POSIXct, POSIXlt or character format time data to convert.}
 
-\item{format}{A character string defining the time/date format if \code{x} is character format, see \code{strptime} for details. Ignored if \code{x} is not character.}
-
 \item{scale}{The scale on which to return times (see Value for options).}
+
+\item{...}{arguments passed to as.POSIXlt}
+
+\item{tryFormats}{formats to try when converting date from character, passed to as.POSIXlt}
 }
 \value{
 A vector of numeric times of day in units defined by the \code{scale} argument:
@@ -28,9 +33,9 @@ Accepts data of class POSIXct, POSIXlt or character and returns the  time of day
 }
 \examples{
 data(BCItime)
-rtime <- gettime(BCItime$date, "\%d/\%m/\%Y \%H:\%M")
-htime <- gettime(BCItime$date, "\%d/\%m/\%Y \%H:\%M", "hour")
-ptime <- gettime(BCItime$date, "\%d/\%m/\%Y \%H:\%M", "proportion")
+rtime <- gettime(BCItime$date)
+htime <- gettime(BCItime$date, "hour")
+ptime <- gettime(BCItime$date, "proportion")
 summary(rtime)
 summary(htime)
 summary(ptime)

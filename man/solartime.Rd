@@ -4,16 +4,27 @@
 \alias{solartime}
 \title{Transforms clock time to solar time anchored to sun rise and sunset times for a given location.}
 \usage{
-solartime(dat, lat, long, tz, format = "\%Y-\%m-\%d \%H:\%M:\%S")
+solartime(
+  dat,
+  lat,
+  lon,
+  tz,
+  ...,
+  tryFormats = c("\%Y-\%m-\%d \%H:\%M:\%OS", "\%Y/\%m/\%d \%H:\%M:\%OS",
+    "\%Y:\%m:\%d \%H:\%M:\%OS", "\%Y-\%m-\%d \%H:\%M", "\%Y/\%m/\%d \%H:\%M",
+    "\%Y:\%m:\%d \%H:\%M", "\%Y-\%m-\%d", "\%Y/\%m/\%d", "\%Y:\%m:\%d")
+)
 }
 \arguments{
 \item{dat}{A vector of character, POSIXct or POSIXlt date-time values.}
 
-\item{lat, long}{Single numeric values or numeric vectors the same length as \code{dat} giving site latitude and longitude in decimal format.}
+\item{lat, lon}{Single numeric values or numeric vectors the same length as \code{dat} giving site latitude and longitude in decimal format.}
 
 \item{tz}{A single numeric value or numeric vector same length as \code{dat} giving time zone (see Details).}
 
-\item{format}{A character string defining the time-date format if \code{dat} is character format, see \code{strptime} for details. Ignored if \code{x} is not character.}
+\item{...}{arguments passed to as.POSIXlt}
+
+\item{tryFormats}{formats to try when converting date from character, passed to as.POSIXlt}
 }
 \value{
 A list with elements:
@@ -33,7 +44,7 @@ Time zone \code{tz} should be expressed in numeric hours relative to UTC (GMT).
 \examples{
 data(BCItime)
 subdat <- subset(BCItime, species=="ocelot")
-times <- solartime(subdat$date, 9.156335, -79.847682, -5, "\%d/\%m/\%Y \%H:\%M")
+times <- solartime(subdat$date, 9.156335, -79.847682, -5)
 rawAct <- fitact(times$clock)
 avgAct <- fitact(times$solar)
 plot(rawAct)

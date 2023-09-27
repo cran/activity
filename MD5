@@ -1,11 +1,11 @@
-f13c2d05693d4d6f0a4d369e16f5da5a *DESCRIPTION
+cfdd1435fc602b790ea049f01447e1f2 *DESCRIPTION
 d75662796393cd5ad77a2304de9253df *NAMESPACE
-a5c7340b0fedf58edd289954c9d0860d *R/activity_code.r
+a2b70dbf5b2e0392fd09ee1e4e8e9dfc *R/activity_code.r
 601e4a0baf81c965b52eb2e420cccb89 *data/BCIspeed.rda
 34124be039630e6ec0d72f15e7842bd8 *data/BCItime.rda
 4baaa78ffd069afa21e6210f4da6c331 *man/BCIspeed.Rd
 b4a115febe9ec400cf8519230c8fa183 *man/BCItime.Rd
-b860198c4f4e55e99d4c255d74d4c3c9 *man/activity.Rd
+f9a8656625b0003da4874ebe9027fe1c *man/activity.Rd
 22217069e29f038820dca2cb3b2b48c8 *man/actmod-class.Rd
 f03c4513788ddc920d9419bbd6cd5468 *man/bwcalc.Rd
 c8e7e88c0c70efb18556fbc686bdacb1 *man/cmean.Rd
